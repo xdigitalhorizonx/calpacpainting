@@ -146,7 +146,7 @@ a:hover { color: var(--blue-hover); }
   --btn-bg: var(--blue); --btn-bg-h: var(--blue-hover);
   display:inline-flex; align-items:center; justify-content:center; gap:.55rem;
   font-family: var(--display); font-weight:700; font-size:.95rem;
-  letter-spacing:.008em; line-height:1;
+  letter-spacing:.008em; line-height:1; white-space:nowrap;
   padding:1.05rem 1.7rem; border-radius:var(--radius-sm);
   background: var(--btn-bg); color:#fff; border:2px solid var(--btn-bg);
   text-decoration:none; cursor:pointer;
@@ -184,23 +184,24 @@ a:hover { color: var(--blue-hover); }
   min-height:78px;
 }
 .brand { display:inline-flex; align-items:center; text-decoration:none; }
-.brand svg { display:block; height:50px; width:auto; }
-.nav { display:flex; justify-content:center; gap:.35rem; align-items:center; }
+.brand svg { display:block; height:50px; width:263px; flex:none; }  /* explicit width — grid pressure collapses width:auto SVGs */
+.nav { display:flex; justify-content:center; gap:.25rem; align-items:center; }
 .nav__cta { display:none; }   /* mobile drawer only — desktop uses .masthead__cta */
 .nav a {
-  position:relative; font-family:var(--display); font-weight:600; font-size:.94rem;
-  color: var(--ink); text-decoration:none; padding:.6rem .82rem; border-radius:7px;
+  position:relative; font-family:var(--display); font-weight:600; font-size:.92rem;
+  white-space:nowrap;          /* "Who We Are" must never break into a stack */
+  color: var(--ink); text-decoration:none; padding:.6rem .5rem; border-radius:7px;
   transition: color .16s ease, background .16s ease;
 }
 .nav a::after {
-  content:''; position:absolute; left:.82rem; right:.82rem; bottom:.35rem; height:2px;
+  content:''; position:absolute; left:.5rem; right:.5rem; bottom:.35rem; height:2px;
   background: var(--clay); transform: scaleX(0); transform-origin:center;
   transition: transform .2s ease;
 }
 .nav a:hover { color: var(--blue-hover); background: var(--sky-tint); }
 .nav a:hover::after, .nav a[aria-current="page"]::after { transform: scaleX(1); }
 .nav a[aria-current="page"] { color: var(--blue-hover); }
-.masthead__cta { display:flex; align-items:center; gap:.9rem; }
+.masthead__cta { display:flex; align-items:center; gap:.75rem; }
 .tel-link {
   display:inline-flex; align-items:center; gap:.45rem;
   font-family:var(--display); font-weight:700; font-size:1rem;
@@ -379,6 +380,8 @@ a:hover { color: var(--blue-hover); }
 }
 .services > * { position:relative; z-index:1; }
 .svc-grid { display:grid; grid-template-columns:repeat(3,1fr); gap: clamp(1rem,2vw,1.5rem); }
+a.svc { display:block; color:inherit; text-decoration:none; }
+.svc-grid--four { grid-template-columns:repeat(2,1fr); max-width:980px; margin-inline:auto; }
 .svc {
   position:relative; background: var(--white);
   border:1px solid var(--sand-deep); border-radius: var(--radius);
@@ -598,6 +601,13 @@ a:hover { color: var(--blue-hover); }
 .band--ink a:not(.btn):hover, .letter a:not(.btn):hover { color: #BFE2F5; }
 .band--ink h2, .band--ink h3 { color:#fff; }
 .band--ink p { color:#D5E6F1; }
+/* WHITE CARDS inside the dark band keep their own ink — without this, the two
+   rules above win the cascade and paint white titles on white cards. */
+.band--ink .svc h3, .band--ink .quote blockquote, .band--ink .info h3 { color: var(--ink); }
+.band--ink .svc p, .band--ink .quote p, .band--ink .info p { color: var(--muted); }
+/* the .letter kicker reads dim as clay-on-navy — always use the sky accent */
+.letter .eyebrow { color: var(--sky); }
+.letter .eyebrow::before, .letter .eyebrow::after { background: var(--sky); }
 .band--ink .eyebrow { color: var(--sky); }
 .band--ink .eyebrow::before, .band--ink .eyebrow::after { background: var(--sky); }
 
@@ -606,6 +616,11 @@ a:hover { color: var(--blue-hover); }
 .split--flip .split__media { order:2; }
 .split__media { border-radius: var(--radius); overflow:hidden; box-shadow: var(--shadow-md); }
 .split__media img { width:100%; }
+@media (min-width: 961px) {
+  /* 3:2 media beside a tall text column floats with big empty flanks — crop taller.
+     Wide one-off photos (the crew shot) opt out with an inline aspect-ratio. */
+  .split__media img { aspect-ratio: 1 / 1; height:auto; object-fit: cover; object-position: center; }
+}
 .split__body h2 { margin-bottom:.5em; }
 .split__body p { color: var(--muted); }
 .band--ink .split__body p { color:#D5E6F1; }
@@ -732,12 +747,13 @@ html.second-coat {
 @media (max-width: 1080px) {
   .foot__grid { grid-template-columns:1fr 1fr; }
   .faces { grid-template-columns:repeat(3,1fr); }
-  .work-grid { grid-template-columns:repeat(3,1fr); }
+  /* 2-col here, not 3: the 8- and 4-tile grids would orphan their last row at 3-col */
+  .work-grid { grid-template-columns:repeat(2,1fr); }
 }
-@media (max-width: 960px) {
-  .masthead__in { grid-template-columns:auto auto; min-height:70px; }
-  .navtoggle { display:flex; }
-  .masthead__cta { display:none; }
+/* The full 7-item nav + logo + phone + CTA needs ~1230px — below that, drawer. */
+@media (max-width: 1279px) {
+  .masthead__in { grid-template-columns:auto 1fr auto; min-height:70px; }
+  .navtoggle { display:flex; justify-self:end; }
   .nav {
     position:absolute; inset-inline:0; top:100%;
     display:none; flex-direction:column; gap:0;
@@ -745,13 +761,21 @@ html.second-coat {
     padding:.6rem 1.25rem 1.25rem; box-shadow: var(--shadow-md);
   }
   .nav.open { display:flex; }
-  .nav a { padding:.85rem .5rem; border-bottom:1px solid var(--line); border-radius:0; }
+  .nav a { padding:.85rem .5rem; border-bottom:1px solid var(--line); border-radius:0; white-space:normal; }
   .nav a::after { display:none; }
   .nav .nav__cta { display:block; margin-top:.9rem; border:0; }
   .nav .nav__cta a { border-bottom:0; padding:0; }
   .nav .btn { width:100%; padding:1.05rem 1.7rem; }
+  .masthead__cta { justify-self:end; margin-right:.9rem; }
+}
+@media (max-width: 775px) {
+  .masthead__cta { display:none; }   /* the drawer carries the phone + CTA below this */
+}
 
+@media (max-width: 960px) {
   .doors__grid { grid-template-columns:1fr; }
+  /* an odd card count at 2-col would orphan the last row — span it instead */
+  .svc-grid > .svc:last-child:nth-child(odd) { grid-column: 1 / -1; }
   .svc-grid { grid-template-columns:repeat(2,1fr); }
   .quote-grid { grid-template-columns:1fr; }
   .crew__split, .split { grid-template-columns:1fr; }
@@ -777,6 +801,12 @@ html.second-coat {
 @media (max-width: 520px) {
   .shell, .shell-wide { width: calc(100% - 2rem); }
   .svc-grid { grid-template-columns:1fr; }
+  /* long single-column card runs read as a monotone stretch — compact them */
+  .svc { padding:1.05rem 1.15rem; }
+  .svc__ico { width:38px; height:38px; border-radius:9px; margin-bottom:.6rem; }
+  .svc__ico svg { width:19px; height:19px; }
+  .svc h3 { font-size:1.05rem; }
+  .svc p { font-size:.9rem; }
   .faces { grid-template-columns:repeat(2,1fr); }
   .hero__cta .btn, .cta__row .btn { width:100%; }
   .creds__n { font-size:1.25rem; }
