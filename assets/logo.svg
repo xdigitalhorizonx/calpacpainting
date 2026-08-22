@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 252 48" role="img" aria-label="Cal Pac Painting of Nevada">
+  <path d="M4 4 H31 V30.5 L21 43.5 Z" fill="none" stroke="#115C8D" stroke-width="3" stroke-linejoin="round"/>
+  <circle cx="22.5" cy="31" r="3.6" fill="#A34420"/>
+  <text x="44" y="24" font-family="Archivo, Helvetica, Arial, sans-serif" font-size="21" font-weight="800" letter-spacing="-.6" fill="#0A2740">CAL PAC</text>
+  <text x="45" y="38" font-family="Archivo, Helvetica, Arial, sans-serif" font-size="8.4" font-weight="600" letter-spacing="2.5" fill="#2E4A61">PAINTING OF NEVADA</text>
+</svg>
