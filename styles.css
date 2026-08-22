@@ -848,3 +848,16 @@ html.second-coat {
   .masthead, .nav, .cta, .foot__social, .coat-sweep, .coat-toast { display:none !important; }
   body { background:#fff; }
 }
+
+/* ---- hero option A: pale-wall image needs dark text, light scrim ------ */
+.hero--light .hero__scrim {
+  background:
+    radial-gradient(90% 62% at 50% 36%, rgba(255,255,255,.42) 0%, rgba(255,255,255,0) 72%),
+    linear-gradient(180deg, rgba(255,255,255,.30) 0%, rgba(255,255,255,0) 55%);
+}
+.hero--light h1 { color: var(--ink); text-shadow: 0 1px 0 rgba(255,255,255,.6); }
+.hero--light h1 em { color: var(--blue); }
+.hero--light .hero__sub { color: var(--muted); text-shadow: 0 1px 0 rgba(255,255,255,.5); }
+.hero--light .eyebrow { color: var(--clay); }
+.hero--light .btn--onphoto { background: var(--ink); color:#fff; border-color: var(--ink); }
+.hero--light .btn--onphoto:hover { background:#123B5C; border-color:#123B5C; color:#fff; }
