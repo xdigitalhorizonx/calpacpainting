@@ -14,21 +14,20 @@
     var toggle = document.getElementById('navtoggle');
     var nav = document.getElementById('nav');
     if (toggle && nav) {
+      var setOpen = function (open) {
+        toggle.setAttribute('aria-expanded', String(open));
+        nav.classList.toggle('open', open);
+        document.body.classList.toggle('nav-locked', open);  // lock page scroll behind the drawer
+      };
       toggle.addEventListener('click', function () {
-        var open = toggle.getAttribute('aria-expanded') === 'true';
-        toggle.setAttribute('aria-expanded', String(!open));
-        nav.classList.toggle('open', !open);
+        setOpen(toggle.getAttribute('aria-expanded') !== 'true');
       });
       nav.addEventListener('click', function (e) {
-        if (e.target.closest('a')) {
-          toggle.setAttribute('aria-expanded', 'false');
-          nav.classList.remove('open');
-        }
+        if (e.target.closest('a')) setOpen(false);
       });
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && nav.classList.contains('open')) {
-          toggle.setAttribute('aria-expanded', 'false');
-          nav.classList.remove('open');
+          setOpen(false);
           toggle.focus();
         }
       });
