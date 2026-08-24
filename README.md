@@ -90,11 +90,13 @@ straight lines drawn straight.
 - **Hero**: image settles from a slow zoom while the headline is revealed line-by-line from behind
   a mask (a straightedge pass); the credentials rail slides up and its numbers **count** (55 →
   $750,000). SplitText DOM is reverted after the entrance, so a11y/SEO see the original markup.
-- **"The line" is scroll-driven**: on desktop the 1971→2026 rule literally draws across the
-  screen under scroll control (in-flow scrub, no pinning — the band is deliberately compact and
-  sits directly beneath the hero's credential rail), milestones popping as the leading edge
-  reaches them. The following section's heading is parked (`motion-static`) — it never animates,
-  it's simply settled in its normal position when you reach it. On mobile it's a simple reveal.
+- **"The line" is scroll-driven**: on desktop a barely-visible ghost of the finished 1971→2026
+  timeline sits behind (the penciled layout), and scroll drags a clip front across the real one,
+  painting rule, ticks, years and text into full visibility in place — dots pop the moment the
+  front crosses them (in-flow scrub, no pinning — the band is deliberately compact and sits
+  directly beneath the hero's credential rail). The following section's heading is parked
+  (`motion-static`) — it never animates, it's simply settled in its normal position when you
+  reach it. On mobile it's a simple reveal; reduced-motion and no-JS never get a ghost layer.
 - **Paint-in reveals**: nothing slides over the photos. Each one starts as a primer coat —
   desaturated under a sky-tint wash with the site's grain — and one clean pass paints the full
   color in: a clipped full-color layer sweeping behind a clay wet edge. Media left of the page's

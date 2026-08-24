@@ -223,15 +223,15 @@
         });
       }
 
-      /* THE LINE — the 1971→2026 rule draws itself under scroll control,
-         in normal page flow (no pinning: the owner wants the band compact,
-         tucked right under the hero rail, with no spare blue). Each
-         milestone (and its dot/tick, via --tl-dot) pops exactly as the
-         leading edge of the line reaches it. */
+      /* THE LINE — two layers, one paint pass. A barely-visible ghost of
+         the whole timeline (faint clone, the penciled layout) sits behind;
+         the real timeline is clipped to a sweeping front that scroll drags
+         left-to-right, painting years, rule, ticks and text into full
+         visibility in place. Dots pop the moment the front crosses them.
+         In normal page flow — no pinning. */
       var tlWrap = d.querySelector('.tl');
       var section = d.querySelector('.timeline');
       if (tlWrap && section && d.querySelector('.tl__rule')) {
-        gsap.set(tlWrap, { opacity: 1, y: 0 });
 
         /* The section that follows the scene stays settled — it must never
            animate right behind the drawing line (motion-static CSS
@@ -240,17 +240,40 @@
         var nextHead = nextSec && nextSec.querySelector('.section-head');
         if (nextHead) nextHead.classList.add('motion-static');
 
+        /* stage wrapper + ghost clone (cloned before any inline styles
+           land on the original, so the ghost stays purely CSS-styled) */
+        var stage = d.createElement('div');
+        stage.className = 'tl-stage';
+        tlWrap.parentNode.insertBefore(stage, tlWrap);
+        var ghost = tlWrap.cloneNode(true);
+        ghost.className = 'tl tl--ghost';
+        ghost.setAttribute('aria-hidden', 'true');
+        stage.appendChild(ghost);
+        stage.appendChild(tlWrap);
+
+        gsap.set(tlWrap, { opacity: 1, y: 0 });
+
         var scene = gsap.timeline({
           defaults: { ease: 'none' },
           scrollTrigger: { trigger: section, start: 'top 72%', end: 'bottom 55%', scrub: 0.5 }
         });
-        scene.fromTo('.tl__rule', { scaleX: 0, transformOrigin: '0 50%' }, { scaleX: 1, duration: 4 });
-        gsap.utils.toArray('.tl__item').forEach(function (item, i) {
-          scene.fromTo(item, { y: 34, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.55, ease: 'power2.out' }, i + 0.22)
-            .fromTo(item, { '--tl-dot': 0 },
-              { '--tl-dot': 1, duration: 0.4, ease: 'back.out(2.2)' }, i + 0.28);
+        /* the paint front: the full-width rule, ticks and type are all
+           revealed by the same moving edge, so the line still "draws" */
+        scene.fromTo(tlWrap,
+          { clipPath: 'inset(0% 100% 0% 0%)' },
+          { clipPath: 'inset(0% -1% 0% 0%)', duration: 4 }, 0);
+        gsap.utils.toArray(tlWrap.querySelectorAll('.tl__item')).forEach(function (item, i) {
+          /* the front crosses item i's dot at scene-time i + 0.5 */
+          scene.fromTo(item, { '--tl-dot': 0 },
+            { '--tl-dot': 1, duration: 0.4, ease: 'back.out(2.2)' }, i + 0.48);
         });
+
+        return function () {
+          /* unwrap on media-condition change so mobile gets the plain DOM */
+          ghost.remove();
+          stage.parentNode.insertBefore(tlWrap, stage);
+          stage.remove();
+        };
       }
     });
 
