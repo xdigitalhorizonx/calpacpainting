@@ -178,7 +178,19 @@
       var section = d.querySelector('.timeline');
       if (tlWrap && section && d.querySelector('.tl__rule')) {
         gsap.set(tlWrap, { opacity: 1, y: 0 });
-        var fits = section.offsetHeight + 32 <= window.innerHeight;
+
+        /* The section that follows the scene must never animate or creep
+           while the line is drawing — it sits settled in its normal
+           position from the start (motion-static CSS force-shows it and
+           the type builder below skips it). */
+        var nextSec = section.nextElementSibling;
+        var nextHead = nextSec && nextSec.querySelector('.section-head');
+        if (nextHead) nextHead.classList.add('motion-static');
+
+        var fits = section.offsetHeight + 32 <= window.innerHeight; /* natural height, pre-chapter */
+        /* While pinned the section owns the full viewport, so nothing
+           below it half-peeks into the frame during the scrub. */
+        if (fits) section.classList.add('tl-chapter');
         var scene = gsap.timeline({
           defaults: { ease: 'none' },
           scrollTrigger: fits
@@ -192,6 +204,8 @@
             .fromTo(item, { '--tl-dot': 0 },
               { '--tl-dot': 1, duration: 0.4, ease: 'back.out(2.2)' }, i + 0.28);
         });
+
+        return function () { section.classList.remove('tl-chapter'); };
       }
     });
 
@@ -268,6 +282,7 @@
                 Children use from(): they are hidden with the parent, whose
                 pre-hide is lifted by the leading set(). ------------------ */
           gsap.utils.toArray('.section-head').forEach(function (head) {
+            if (head.classList.contains('motion-static')) return; /* parked under the line scene */
             var h2 = head.querySelector('h2');
             var split2 = h2 ? splitLines(h2) : null;
             var tl = gsap.timeline({

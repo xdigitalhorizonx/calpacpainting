@@ -90,10 +90,12 @@ straight lines drawn straight.
 - **Hero**: image settles from a slow zoom while the headline is revealed line-by-line from behind
   a mask (a straightedge pass); the credentials rail slides up and its numbers **count** (55 →
   $750,000). SplitText DOM is reverted after the entrance, so a11y/SEO see the original markup.
-- **"The line" is scroll-driven**: on desktop the 1971→2026 section pins and the rule literally
-  draws across the screen under scroll control, milestones popping as the leading edge reaches
-  them. If the section doesn't fit the viewport it scrubs in normal flow instead — never a
-  clipped pin. On mobile it's a simple reveal.
+- **"The line" is scroll-driven**: on desktop the 1971→2026 section pins **as a full-viewport
+  chapter** and the rule literally draws across the screen under scroll control, milestones
+  popping as the leading edge reaches them. Nothing below peeks into the frame during the scrub,
+  and the following section's heading is parked (`motion-static`) — it never animates, it's simply
+  settled in its normal position when you reach it. If the section doesn't fit the viewport it
+  scrubs in normal flow instead — never a clipped pin. On mobile it's a simple reveal.
 - **Roller-pass reveals**: every project/media image is uncovered by a sky-colored veil sweeping
   off with a clay "wet edge" — the site's own palette doing the painting.
 - **Scroll progress** is a 3px paint line filling across the top of the viewport.

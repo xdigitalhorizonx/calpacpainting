@@ -765,6 +765,16 @@ a.svc { display:block; color:inherit; text-decoration:none; }
 .tl__item::after { scale: var(--tl-dot, 1); }
 .tl__item::before { transform-origin: top; scale: 1 var(--tl-dot, 1); }
 
+/* the section head that follows the line scene is parked: always settled
+   in its normal position, exempt from every reveal (set by motion.js) */
+html.js .motion-static, html.js .motion-static > * {
+  opacity:1 !important; transform:none !important;
+}
+
+/* while the line scene is pinned it owns the whole viewport, so nothing
+   below it half-peeks into the frame during the scrub (set by motion.js) */
+.tl-chapter { min-height:100vh; min-height:100svh; display:grid; align-content:center; }
+
 /* scroll progress — a paint line filling across the top of the viewport */
 .scrollline {
   position: fixed; top:0; left:0; right:0; height:3px; z-index:150;
