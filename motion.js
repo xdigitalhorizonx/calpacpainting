@@ -136,7 +136,7 @@
           scrollTrigger: { trigger: cta, start: 'top 74%', once: true }
         });
         var ctaEb = cta.querySelector('.eyebrow'), ctaH = cta.querySelector('h2'),
-            ctaP = cta.querySelector('.shell > p'), ctaRow = cta.querySelectorAll('.cta__row > *');
+            ctaP = cta.querySelector('.shell > p:not(.eyebrow)'), ctaRow = cta.querySelectorAll('.cta__row > *');
         if (ctaEb) ctaTl.from(ctaEb, { y: 18, opacity: 0, duration: 0.6 }, 0);
         if (ctaH) ctaTl.from(ctaH, { y: 30, opacity: 0, duration: 0.9 }, 0.08);
         if (ctaP) ctaTl.from(ctaP, { y: 24, opacity: 0, duration: 0.8 }, 0.22);
@@ -170,32 +170,26 @@
         });
       }
 
-      /* THE LINE — the 1971→2026 rule draws itself under scroll control;
-         each milestone (and its dot/tick, via --tl-dot) pops exactly as the
-         leading edge reaches it. Pinned when the section fits the viewport,
-         otherwise scrubbed in normal flow — never a clipped pin. */
+      /* THE LINE — the 1971→2026 rule draws itself under scroll control,
+         in normal page flow (no pinning: the owner wants the band compact,
+         tucked right under the hero rail, with no spare blue). Each
+         milestone (and its dot/tick, via --tl-dot) pops exactly as the
+         leading edge of the line reaches it. */
       var tlWrap = d.querySelector('.tl');
       var section = d.querySelector('.timeline');
       if (tlWrap && section && d.querySelector('.tl__rule')) {
         gsap.set(tlWrap, { opacity: 1, y: 0 });
 
-        /* The section that follows the scene must never animate or creep
-           while the line is drawing — it sits settled in its normal
-           position from the start (motion-static CSS force-shows it and
-           the type builder below skips it). */
+        /* The section that follows the scene stays settled — it must never
+           animate right behind the drawing line (motion-static CSS
+           force-shows it and the type builder below skips it). */
         var nextSec = section.nextElementSibling;
         var nextHead = nextSec && nextSec.querySelector('.section-head');
         if (nextHead) nextHead.classList.add('motion-static');
 
-        var fits = section.offsetHeight + 32 <= window.innerHeight; /* natural height, pre-chapter */
-        /* While pinned the section owns the full viewport, so nothing
-           below it half-peeks into the frame during the scrub. */
-        if (fits) section.classList.add('tl-chapter');
         var scene = gsap.timeline({
           defaults: { ease: 'none' },
-          scrollTrigger: fits
-            ? { trigger: section, start: 'top top', end: '+=950', scrub: 0.5, pin: true, anticipatePin: 1 }
-            : { trigger: section, start: 'top 62%', end: 'bottom 92%', scrub: 0.5 }
+          scrollTrigger: { trigger: section, start: 'top 72%', end: 'bottom 55%', scrub: 0.5 }
         });
         scene.fromTo('.tl__rule', { scaleX: 0, transformOrigin: '0 50%' }, { scaleX: 1, duration: 4 });
         gsap.utils.toArray('.tl__item').forEach(function (item, i) {
@@ -204,8 +198,6 @@
             .fromTo(item, { '--tl-dot': 0 },
               { '--tl-dot': 1, duration: 0.4, ease: 'back.out(2.2)' }, i + 0.28);
         });
-
-        return function () { section.classList.remove('tl-chapter'); };
       }
     });
 
@@ -294,7 +286,10 @@
             var eb = head.querySelector('.eyebrow');
             if (eb) tl.from(eb, { y: 18, opacity: 0, duration: 0.6 }, 0);
             if (split2) tl.from(split2.lines, { yPercent: 112, duration: 0.9, stagger: 0.1 }, 0.08);
-            var ps = head.querySelectorAll(':scope > p');
+            /* :not(.eyebrow) — the eyebrow is itself a <p> and already has
+               its own tween above; a second from() would capture its hidden
+               state as the end value and freeze it invisible */
+            var ps = head.querySelectorAll(':scope > p:not(.eyebrow)');
             if (ps.length) tl.from(ps, { y: 24, opacity: 0, duration: 0.8, stagger: 0.08 }, 0.3);
           });
 
@@ -309,7 +304,7 @@
             if (eb) tl.from(eb, { y: 18, opacity: 0, duration: 0.6 }, 0);
             var h2 = body.querySelector('h2');
             if (h2) tl.from(h2, { y: 26, opacity: 0, duration: 0.85 }, 0.08);
-            var ps = body.querySelectorAll(':scope > p');
+            var ps = body.querySelectorAll(':scope > p:not(.eyebrow)');
             if (ps.length) tl.from(ps, { y: 22, opacity: 0, duration: 0.75, stagger: 0.08 }, 0.24);
             var ticks = body.querySelectorAll('.ticks li');
             if (ticks.length) tl.from(ticks, { x: -22, opacity: 0, duration: 0.55, stagger: 0.08 }, 0.42);

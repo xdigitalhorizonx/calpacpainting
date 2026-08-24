@@ -291,7 +291,13 @@ a:hover { color: var(--blue-hover); }
 /* ============================================================
    §2  THE LINE — measured timeline (the brand's straight line)
    ============================================================ */
-.timeline { position:relative; background: var(--sky-tint); padding: var(--pad-section) 0; overflow:hidden; }
+/* Deliberately tighter than --pad-section: the owner wants the line to sit
+   directly beneath the hero's credential rail, no spare blue around it. */
+.timeline {
+  position:relative; background: var(--sky-tint); overflow:hidden;
+  padding: clamp(2rem, 3.5vw, 2.75rem) 0 clamp(2.75rem, 5vw, 4rem);
+}
+.timeline .section-head { margin-bottom: clamp(1.5rem, 3vw, 2.25rem); }
 .timeline::after {
   content:''; position:absolute; inset:0; pointer-events:none;
   background: radial-gradient(80% 100% at 50% 0%, rgba(143,203,234,.42) 0%, rgba(143,203,234,0) 62%);
@@ -299,7 +305,7 @@ a:hover { color: var(--blue-hover); }
 .timeline > * { position:relative; z-index:1; }
 .tl {
   --tl-pad: 2.6rem;
-  position:relative; margin-top: clamp(2.5rem,5vw,3.5rem);
+  position:relative; margin-top: clamp(1.25rem,2.5vw,2rem);
   padding-top: var(--tl-pad);
 }
 .tl__rule {
@@ -771,9 +777,6 @@ html.js .motion-static, html.js .motion-static > * {
   opacity:1 !important; transform:none !important;
 }
 
-/* while the line scene is pinned it owns the whole viewport, so nothing
-   below it half-peeks into the frame during the scrub (set by motion.js) */
-.tl-chapter { min-height:100vh; min-height:100svh; display:grid; align-content:center; }
 
 /* scroll progress — a paint line filling across the top of the viewport */
 .scrollline {
