@@ -95,8 +95,12 @@ straight lines drawn straight.
   sits directly beneath the hero's credential rail), milestones popping as the leading edge
   reaches them. The following section's heading is parked (`motion-static`) — it never animates,
   it's simply settled in its normal position when you reach it. On mobile it's a simple reveal.
-- **Roller-pass reveals**: every project/media image is uncovered by a sky-colored veil sweeping
-  off with a clay "wet edge" — the site's own palette doing the painting.
+- **Paint-in reveals**: nothing slides over the photos. Each one starts as a primer coat —
+  desaturated under a sky-tint wash with the site's grain — and one clean pass paints the full
+  color in: a clipped full-color layer sweeping behind a clay wet edge. Media left of the page's
+  center line paints L→R, right of it R→L (outer boxes lead), so reveals converge on the
+  layout's center seam. Helper nodes are removed on completion and inline styles cleared, so the
+  CSS hover zooms keep working.
 - **Scroll progress** is a 3px paint line filling across the top of the viewport.
 - Interior pages get the same system (masked `pagehead` intro, section choreography, counters).
 

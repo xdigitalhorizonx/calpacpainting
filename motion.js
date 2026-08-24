@@ -70,40 +70,74 @@
         }
       });
 
-      /* -- roller-pass wipe reveals on media -------------------------
-         Four slats sweep with a stagger (separate passes of the roller);
-         media left of the page's center line sweeps L->R, right of it
-         R->L (mirrored veil), so reveals converge on the layout's center
-         seam. The photo drifts in with the pass and settles. */
-      var veils = [];
+      /* -- paint-in reveals on media ---------------------------------
+         Nothing slides OVER the photo. The photo is there from the start
+         as a primer coat — desaturated, washed with the site's sky tint
+         and grain — and one clean pass paints the full color in: a
+         full-color clone clipped to a straight front that sweeps across,
+         led by the clay wet edge. Media left of the page's center line
+         paints L->R, right of it R->L, so reveals still converge on the
+         layout's center seam; in multi-column rows the outer boxes start
+         first. On complete every helper node is removed and inline
+         styles are cleared, so the CSS hover zooms work again. */
+      var paintNodes = [];
       gsap.utils.toArray('.door__media, .split__media, .crew__media, .tile')
         .forEach(function (box) {
           box.classList.add('has-wipe');
           var img = box.querySelector('img');
+          if (!img) return;
           var r = box.getBoundingClientRect();
           var rtl = (r.left + r.width / 2) > window.innerWidth / 2;
+          /* outer boxes lead, center follows — converging cascade */
+          var lead = Math.min(Math.max(r.left, 0), Math.max(window.innerWidth - r.right, 0));
+          var delay = (lead / window.innerWidth) * 0.55;
 
-          var veil = d.createElement('div');
-          veil.className = 'wipe-veil' + (rtl ? ' wipe-veil--rtl' : '');
-          veil.setAttribute('aria-hidden', 'true');
-          var slats = [];
-          for (var i = 0; i < 4; i++) {
-            var s = d.createElement('div');
-            s.className = 'wipe-slat';
-            veil.appendChild(s);
-            slats.push(s);
-          }
-          box.appendChild(veil);
-          veils.push(veil);
+          var cast = d.createElement('div');
+          cast.className = 'primer-cast';
+          cast.setAttribute('aria-hidden', 'true');
+
+          var fill = d.createElement('div');
+          fill.className = 'paint-fill';
+          fill.setAttribute('aria-hidden', 'true');
+          var clone = img.cloneNode(false);
+          clone.removeAttribute('id');
+          clone.setAttribute('alt', '');
+          clone.setAttribute('aria-hidden', 'true');
+          fill.appendChild(clone);
+
+          var edge = d.createElement('div');
+          edge.className = 'paint-edge' + (rtl ? ' paint-edge--rtl' : '');
+          edge.setAttribute('aria-hidden', 'true');
+
+          img.classList.add('is-primer');
+          box.appendChild(cast);
+          box.appendChild(fill);
+          box.appendChild(edge);
+          paintNodes.push(cast, fill, edge);
+
+          var CLIP_FROM = rtl ? 'inset(0% 0% 0% 100%)' : 'inset(0% 100% 0% 0%)';
+          var CLIP_TO = rtl ? 'inset(0% 0% 0% -1%)' : 'inset(0% -1% 0% 0%)';
+          var imgs = [img, clone];
 
           var tl = gsap.timeline({
-            scrollTrigger: { trigger: box, start: 'top 82%', once: true }
+            scrollTrigger: { trigger: box, start: 'top 82%', once: true },
+            onComplete: function () {
+              cast.remove(); fill.remove(); edge.remove();
+              img.classList.remove('is-primer');
+              gsap.set(img, { clearProps: 'transform,filter' });
+            }
           });
-          tl.set(box, { opacity: 1, y: 0 })
-            .fromTo(slats, { xPercent: 0 },
-              { xPercent: 101, duration: 0.85, ease: 'power4.inOut', stagger: 0.07 });
-          if (img) tl.fromTo(img, { scale: 1.14, x: rtl ? 22 : -22 },
-            { scale: 1, x: 0, duration: 1.5, ease: 'power3.out' }, 0.08);
+          /* the box itself appears as primer immediately… */
+          tl.to(box, { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' }, 0)
+            /* …then one pass paints the color in (outer boxes lead) */
+            .fromTo(fill, { clipPath: CLIP_FROM },
+              { clipPath: CLIP_TO, duration: 0.95, ease: 'power2.inOut' }, delay)
+            .fromTo(edge, { x: rtl ? 30 : -30 },
+              { x: function () { return (rtl ? -1 : 1) * box.clientWidth; },
+                duration: 0.95, ease: 'power2.inOut' }, delay)
+            .to(edge, { opacity: 0, duration: 0.18 }, delay + 0.78)
+            .fromTo(imgs, { scale: 1.12, x: rtl ? 18 : -18 },
+              { scale: 1, x: 0, duration: 1.4, ease: 'power3.out' }, delay + 0.05);
         });
 
       /* -- counters: creds rail + stat blocks ------------------------ */
@@ -162,7 +196,10 @@
       /* cleanup if the media condition stops matching */
       return function () {
         bar.remove();
-        veils.forEach(function (v) { v.remove(); });
+        paintNodes.forEach(function (n) { n.remove(); });
+        gsap.utils.toArray('.has-wipe img.is-primer').forEach(function (el) {
+          el.classList.remove('is-primer');
+        });
       };
     });
 

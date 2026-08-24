@@ -786,30 +786,36 @@ html.js .motion-static, html.js .motion-static > * {
   pointer-events:none;
 }
 
-/* roller-pass reveal: four staggered strokes the color of the site's own
-   paint sweep off each photo — each slat carries the clay wet edge and the
-   site's grain, and their offsets read as separate passes of the roller.
-   Media left of the page's center line sweeps L->R; media right of it is
-   mirrored (--rtl flips the whole veil), so reveals converge on the same
-   center seam the layout is built around. */
+/* paint-in reveal: nothing slides over the photo. The photo starts as a
+   primer coat — desaturated under a sky-tint wash with the site's grain —
+   and a full-color clone, clipped to a straight scroll-triggered front led
+   by the clay wet edge, is painted across it. Media left of the page's
+   center line paints L->R, right of it R->L, converging on the layout's
+   center seam. All helper nodes are removed when the pass completes. */
 .has-wipe { position:relative; overflow:hidden; }
-.wipe-veil { position:absolute; inset:0; z-index:6; pointer-events:none; }
-.wipe-veil--rtl { transform: scaleX(-1); }
-.wipe-slat {
-  position:absolute; left:0; right:0; height:25.4%;
-  background: linear-gradient(90deg, var(--clay) 0 5px, var(--sky) 5px 55%, var(--sky-deep) 100%);
-  will-change: transform;
-}
-.wipe-slat:nth-child(1) { top:0; }
-.wipe-slat:nth-child(2) { top:24.9%; }
-.wipe-slat:nth-child(3) { top:49.8%; }
-.wipe-slat:nth-child(4) { top:74.7%; height:25.3%; }
-.wipe-slat:nth-child(even) {
-  background: linear-gradient(90deg, var(--clay) 0 5px, var(--sky-deep) 5px 45%, var(--sky) 100%);
-}
-.wipe-slat::after {
-  content:''; position:absolute; inset:0; mix-blend-mode:multiply; opacity:.8;
+.has-wipe img.is-primer { filter: saturate(.14) contrast(.9) brightness(1.07); }
+.primer-cast {
+  position:absolute; inset:0; z-index:1; pointer-events:none;
+  background-color: var(--sky-tint); opacity:.45;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.055'/%3E%3C/svg%3E");
+}
+.paint-fill {
+  position:absolute; inset:0; z-index:1; pointer-events:none;
+  clip-path: inset(0% 100% 0% 0%);
+}
+.paint-fill img { width:100%; height:100%; object-fit:cover; }
+.paint-edge {
+  position:absolute; top:0; bottom:0; left:0; width:30px; z-index:1;
+  pointer-events:none; will-change: transform;
+  background: linear-gradient(90deg,
+    rgba(143,203,234,0) 0%, rgba(143,203,234,.55) 55%,
+    var(--sky) calc(100% - 5px), var(--clay) calc(100% - 5px), var(--clay) 100%);
+}
+.paint-edge--rtl {
+  left:auto; right:0;
+  background: linear-gradient(270deg,
+    rgba(143,203,234,0) 0%, rgba(143,203,234,.55) 55%,
+    var(--sky) calc(100% - 5px), var(--clay) calc(100% - 5px), var(--clay) 100%);
 }
 
 /* failsafe: motion never gets to hide content for good */
@@ -821,7 +827,9 @@ html.motion-fail .tl__item, html.motion-fail .tl__rule {
   opacity:1 !important; transform:none !important;
 }
 html.motion-fail .tl__item { --tl-dot: 1; }
-html.motion-fail .wipe-veil, html.motion-fail .scrollline { display:none !important; }
+html.motion-fail .has-wipe img { filter:none !important; }
+html.motion-fail .primer-cast, html.motion-fail .paint-fill,
+html.motion-fail .paint-edge, html.motion-fail .scrollline { display:none !important; }
 
 @media (prefers-reduced-motion: reduce) {
   .reveal, .reveal.in { opacity:1 !important; transform:none !important; transition:none !important; }
