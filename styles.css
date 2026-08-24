@@ -786,13 +786,30 @@ html.js .motion-static, html.js .motion-static > * {
   pointer-events:none;
 }
 
-/* roller-pass reveal: a veil the color of the site's own paint sweeps
-   off each photo; the clay stripe is the wet leading edge */
+/* roller-pass reveal: four staggered strokes the color of the site's own
+   paint sweep off each photo — each slat carries the clay wet edge and the
+   site's grain, and their offsets read as separate passes of the roller.
+   Media left of the page's center line sweeps L->R; media right of it is
+   mirrored (--rtl flips the whole veil), so reveals converge on the same
+   center seam the layout is built around. */
 .has-wipe { position:relative; overflow:hidden; }
-.wipe-veil {
-  position:absolute; inset:0; z-index:6; pointer-events:none;
-  background: linear-gradient(90deg, var(--clay) 0, var(--clay) 5px, var(--sky) 5px, var(--sky-deep) 100%);
+.wipe-veil { position:absolute; inset:0; z-index:6; pointer-events:none; }
+.wipe-veil--rtl { transform: scaleX(-1); }
+.wipe-slat {
+  position:absolute; left:0; right:0; height:25.4%;
+  background: linear-gradient(90deg, var(--clay) 0 5px, var(--sky) 5px 55%, var(--sky-deep) 100%);
   will-change: transform;
+}
+.wipe-slat:nth-child(1) { top:0; }
+.wipe-slat:nth-child(2) { top:24.9%; }
+.wipe-slat:nth-child(3) { top:49.8%; }
+.wipe-slat:nth-child(4) { top:74.7%; height:25.3%; }
+.wipe-slat:nth-child(even) {
+  background: linear-gradient(90deg, var(--clay) 0 5px, var(--sky-deep) 5px 45%, var(--sky) 100%);
+}
+.wipe-slat::after {
+  content:''; position:absolute; inset:0; mix-blend-mode:multiply; opacity:.8;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.055'/%3E%3C/svg%3E");
 }
 
 /* failsafe: motion never gets to hide content for good */

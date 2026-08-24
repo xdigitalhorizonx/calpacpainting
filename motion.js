@@ -70,15 +70,29 @@
         }
       });
 
-      /* -- roller-pass wipe reveals on media ------------------------- */
+      /* -- roller-pass wipe reveals on media -------------------------
+         Four slats sweep with a stagger (separate passes of the roller);
+         media left of the page's center line sweeps L->R, right of it
+         R->L (mirrored veil), so reveals converge on the layout's center
+         seam. The photo drifts in with the pass and settles. */
       var veils = [];
       gsap.utils.toArray('.door__media, .split__media, .crew__media, .tile')
         .forEach(function (box) {
           box.classList.add('has-wipe');
           var img = box.querySelector('img');
+          var r = box.getBoundingClientRect();
+          var rtl = (r.left + r.width / 2) > window.innerWidth / 2;
+
           var veil = d.createElement('div');
-          veil.className = 'wipe-veil';
+          veil.className = 'wipe-veil' + (rtl ? ' wipe-veil--rtl' : '');
           veil.setAttribute('aria-hidden', 'true');
+          var slats = [];
+          for (var i = 0; i < 4; i++) {
+            var s = d.createElement('div');
+            s.className = 'wipe-slat';
+            veil.appendChild(s);
+            slats.push(s);
+          }
           box.appendChild(veil);
           veils.push(veil);
 
@@ -86,8 +100,10 @@
             scrollTrigger: { trigger: box, start: 'top 82%', once: true }
           });
           tl.set(box, { opacity: 1, y: 0 })
-            .fromTo(veil, { xPercent: 0 }, { xPercent: 101, duration: 0.9, ease: 'power4.inOut' });
-          if (img) tl.fromTo(img, { scale: 1.12 }, { scale: 1, duration: 1.5, ease: 'power3.out' }, 0.1);
+            .fromTo(slats, { xPercent: 0 },
+              { xPercent: 101, duration: 0.85, ease: 'power4.inOut', stagger: 0.07 });
+          if (img) tl.fromTo(img, { scale: 1.14, x: rtl ? 22 : -22 },
+            { scale: 1, x: 0, duration: 1.5, ease: 'power3.out' }, 0.08);
         });
 
       /* -- counters: creds rail + stat blocks ------------------------ */
