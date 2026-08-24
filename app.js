@@ -41,21 +41,7 @@
       window.addEventListener('scroll', onScroll, { passive: true });
     }
 
-    /* ---- on-scroll reveal -------------------------------------------- */
-    var items = document.querySelectorAll('.reveal');
-    if (reduced || !('IntersectionObserver' in window)) {
-      Array.prototype.forEach.call(items, function (el) { el.classList.add('in'); });
-    } else {
-      var io = new IntersectionObserver(function (entries) {
-        entries.forEach(function (en) {
-          if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
-        });
-      }, { rootMargin: '0px 0px -8% 0px', threshold: 0.06 });
-      Array.prototype.forEach.call(items, function (el, i) {
-        el.style.transitionDelay = Math.min(i % 4, 3) * 70 + 'ms';
-        io.observe(el);
-      });
-    }
+    /* ---- on-scroll reveals live in motion.js (GSAP) ------------------- */
 
     /* ---- estimate form (static host: no backend) ---------------------- */
     var form = document.getElementById('estimate-form');

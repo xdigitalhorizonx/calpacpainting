@@ -79,6 +79,35 @@ Verified rendering by canvas `measureText` width delta (Archivo 59.4px, Hanken 8
 fallback), with a deliberately fake family as a control. Note: `document.fonts.check()` returned
 **true** for the nonexistent family — it is not proof, and was not trusted.
 
+### Motion (GSAP)
+
+The site carries a scroll-orchestrated motion layer (`motion.js`) built on **GSAP 3.15 +
+ScrollTrigger + SplitText, vendored into `assets/js/`** — no CDN, so the "zero external runtime
+requests" guarantee still holds. GSAP's license permits vendoring in client work, no attribution
+required. Concept: **everything moves the way a painter works** — taped edges, one clean pass,
+straight lines drawn straight.
+
+- **Hero**: image settles from a slow zoom while the headline is revealed line-by-line from behind
+  a mask (a straightedge pass); the credentials rail slides up and its numbers **count** (55 →
+  $750,000). SplitText DOM is reverted after the entrance, so a11y/SEO see the original markup.
+- **"The line" is scroll-driven**: on desktop the 1971→2026 section pins and the rule literally
+  draws across the screen under scroll control, milestones popping as the leading edge reaches
+  them. If the section doesn't fit the viewport it scrubs in normal flow instead — never a
+  clipped pin. On mobile it's a simple reveal.
+- **Roller-pass reveals**: every project/media image is uncovered by a sky-colored veil sweeping
+  off with a clay "wet edge" — the site's own palette doing the painting.
+- **Scroll progress** is a 3px paint line filling across the top of the viewport.
+- Interior pages get the same system (masked `pagehead` intro, section choreography, counters).
+
+Safety contracts, all verified headlessly (see table below):
+
+- Every pre-hide style sits inside a `prefers-reduced-motion: no-preference` block **and** is
+  gated on `html.js` — reduced-motion and no-JS visitors get the complete page instantly, with
+  the counters' final values and zero injected elements.
+- A 3-second inline failsafe (`motion-fail`) force-reveals everything if GSAP ever fails to boot,
+  and any exception in `motion.js` triggers the same path immediately.
+- Transforms + opacity only; scrubbed tweens run `ease: 'none'`; one motion library per page.
+
 ### Easter egg
 Type **C-O-A-T** anywhere (or the Konami code, or tap the logo three times) and a roller sweeps a
 fresh coat across the page, repainting the entire site in the inverse colourway. Type it again to
@@ -144,6 +173,10 @@ hint. Both colour states are AA-audited.
 | Contrast, base state + dark band + easter-egg state | 0 fails |
 | Fonts render (measured, with known-bad control) | pass |
 | External runtime requests | 0 |
+| Motion: desktop end-states (hero, pinned line scene 0→0.51→1.00, wipes, counters, no `.reveal` left hidden) | pass |
+| Motion: reduced-motion = instantly complete page, no injected elements, no counting | pass |
+| Motion: mobile 390px (no pin, no overflow, all content resolves) | pass |
+| Motion: no-JS (nothing pre-hidden) + subpage intro + SplitText DOM reverted | pass |
 
 ---
 
